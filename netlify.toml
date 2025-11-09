@@ -1,0 +1,9 @@
+[build]
+  command = "composer install"
+  publish = "."
+
+[[redirects]]
+  from = "/*"
+  to = "/index.php"
+  status = 200
+  force = true
