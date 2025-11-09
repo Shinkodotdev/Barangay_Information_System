@@ -1,16 +1,24 @@
-# netlify.toml for PHP project
+# netlify.toml for PHP project with backend routing
 [build]
-  # Command to install PHP dependencies
+  # Command to install PHP dependencies via Composer
   command = "composer install"
   # Folder to publish; root has index.php
   publish = "."
 
-# Enable PHP plugin for Netlify
+# Enable Netlify PHP plugin
 [[plugins]]
   package = "@netlify/plugin-php"
 
-# Optional: redirect all requests to index.php (for routing)
+# Redirect all routes to index.php for frontend routing
 [[redirects]]
   from = "/*"
   to = "/index.php"
   status = 200
+  force = true
+
+# Optional: Serve backend files properly if accessing /backend/*
+[[redirects]]
+  from = "/backend/*"
+  to = "/backend/:splat"
+  status = 200
+  force = true
