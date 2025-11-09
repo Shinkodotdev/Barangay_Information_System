@@ -1,3 +1,4 @@
+<!-- Profile -->
 <div class="max-w-5xl mx-auto px-6 py-10">
     <!-- ✅ Profile Header -->
     <div class="flex flex-col sm:flex-row sm:items-center sm:space-x-6 bg-white p-6 rounded-xl shadow-md mb-10">

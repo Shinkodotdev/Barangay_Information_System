@@ -1,3 +1,4 @@
+<!-- Residency Info -->
 <section class="bg-white p-6 rounded-xl shadow-sm">
                 <?php sectionHeader("fa-home", "Residency Information"); ?>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">

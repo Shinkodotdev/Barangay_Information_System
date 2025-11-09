@@ -33,7 +33,7 @@ $requests = getDocumentByStatus($pdo, 'Pending', 50);
                     ['title' => 'Announcements', 'count' => $stats['announcements'], 'desc' => 'Published barangay news', 'color' => 'purple', 'icon' => 'fa-bullhorn'],
                 ];
                 foreach ($cards as $card):
-                ?>
+                    ?>
                     <a href="./<?= $card['title'] ?>.php" target="_blank" rel="noopener noreferrer"
                         class="block bg-white shadow-md sm:shadow-lg rounded-xl p-4 sm:p-6 flex justify-between items-center border-l-4 border-<?= $card['color'] ?>-500 hover:shadow-xl transition flex-wrap">
                         <div class="w-full sm:w-auto">
@@ -47,7 +47,8 @@ $requests = getDocumentByStatus($pdo, 'Pending', 50);
                                 <?= $card['desc'] ?>
                             </p>
                         </div>
-                        <div class="bg-<?= $card['color'] ?>-100 p-2 sm:p-3 rounded-full text-<?= $card['color'] ?>-500 text-xl sm:text-2xl md:text-3xl mt-2 sm:mt-0">
+                        <div
+                            class="bg-<?= $card['color'] ?>-100 p-2 sm:p-3 rounded-full text-<?= $card['color'] ?>-500 text-xl sm:text-2xl md:text-3xl mt-2 sm:mt-0">
                             <i class="fa-solid <?= $card['icon'] ?>"></i>
                         </div>
                     </a>
@@ -66,23 +67,19 @@ $requests = getDocumentByStatus($pdo, 'Pending', 50);
                         <option value="day">Day</option>
                         <option value="range">Date Range</option>
                     </select>
-
                     <input type="month" id="monthFilter" class="border rounded px-2 py-1 hidden w-full sm:w-auto">
                     <input type="number" id="yearFilter" class="border rounded px-2 py-1 hidden w-full sm:w-auto"
                         min="1800" max="<?= date('Y') ?>" placeholder="Year">
                     <input type="date" id="dayFilter" class="border rounded px-2 py-1 hidden w-full sm:w-auto">
-
                     <div id="rangeFilter"
                         class="hidden flex flex-col sm:flex-row items-start sm:items-center gap-2 w-full sm:w-auto">
                         <input type="date" id="startDate" class="border rounded px-2 py-1 w-full sm:w-auto">
                         <span class="hidden sm:inline">to</span>
                         <input type="date" id="endDate" class="border rounded px-2 py-1 w-full sm:w-auto">
                     </div>
-
                     <button type="button" id="applyFilter"
                         class="bg-blue-500 text-white px-3 py-1 rounded w-full sm:w-auto">Apply</button>
                 </form>
-
                 <div class="h-64 sm:h-96">
                     <canvas id="populationChart"></canvas>
                 </div>
@@ -185,50 +182,7 @@ $requests = getDocumentByStatus($pdo, 'Pending', 50);
     <?php include('../../assets/modals/user_view_modal.php'); ?>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="../../assets/js/Chart.js"></script>
     <script src="../../assets/js/View_User.js"></script>
-    <script>
-        function updateRequest(requestId, action) {
-            Swal.fire({
-                title: `Are you sure you want to ${action.toLowerCase()} this request?`,
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: action === 'Approved' ? '#22c55e' : '#ef4444',
-                cancelButtonColor: '#6b7280',
-                confirmButtonText: `Yes, ${action}!`
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    fetch(`../../../backend/actions/update_request.php`, {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json'
-                            },
-                            body: JSON.stringify({
-                                request_id: requestId,
-                                action: action
-                            })
-                        })
-                        .then(res => res.json())
-                        .then(data => {
-                            if (data.success) {
-                                Swal.fire(
-                                    'Success!',
-                                    `Request has been ${action.toLowerCase()}.`,
-                                    'success'
-                                ).then(() => location.reload());
-                            } else {
-                                Swal.fire(
-                                    'Error!',
-                                    data.message || 'Something went wrong.',
-                                    'error'
-                                );
-                            }
-                        })
-                        .catch(err => Swal.fire('Error!', err.message, 'error'));
-                }
-            });
-        }
-    </script>
+    <script src="../../assets/js/adminDashboard.js"></script>
 </body>
-
 </html>

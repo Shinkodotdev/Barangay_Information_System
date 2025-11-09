@@ -56,5 +56,4 @@ include 'admin-head.php';
     <script src="../../assets/js/User_Reminder.js"></script>
     <script src="../../assets/js/View_User.js"></script>
 </body>
-
 </html>

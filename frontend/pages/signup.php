@@ -2,9 +2,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <?php include '../components/Head.php'; ?>
-
 <body class="bg-gray-900 flex items-center justify-center min-h-screen">
-
     <div class="w-full max-w-md mx-auto bg-white/10 backdrop-blur-md p-8 rounded-2xl shadow-lg">
         <!-- Header -->
         <div class="text-center space-y-2 mb-6">
@@ -16,7 +14,6 @@
                 Register for Barangay Poblacion Sur Talavera Information System
             </p>
         </div>
-
         <!-- Form -->
         <form action="../../backend/actions/signup_process.php" method="POST" class="space-y-3">
             <!-- Name Section -->

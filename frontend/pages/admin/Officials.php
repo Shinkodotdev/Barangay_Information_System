@@ -9,7 +9,8 @@ require '../../../backend/config/db.php';
 $pageTitle = "Admin | All Officials List";
 $pageDescription = "Manage Officials for Barangay Poblacion Sur System";
 include './admin-head.php';
-$users = getAllUsers($pdo, 'Official', 50);
+$users = getAllActiveOfficials($pdo, 50);
+
 ?>
 
 <body class="bg-gray-100">
@@ -28,7 +29,17 @@ $users = getAllUsers($pdo, 'Official', 50);
                     <!-- Desktop Table -->
                     <div class="hidden md:block overflow-x-auto max-h-96 overflow-y-auto">
                         <table id="docTable" class="min-w-full text-sm border divide-y divide-gray-200">
-                            <?php include('../../components/resident_table.php'); ?>
+                            <thead class="bg-gray-100 text-gray-700 sticky top-0 z-20">
+                                <tr>
+                                    <th class="px-3 py-2 text-left">Full Name</th>
+                                    <th class="px-3 py-2 text-left">Email</th>
+                                    <th class="px-3 py-2 text-left">Role</th>
+                                    <th class="px-3 py-2 text-left">Position</th>
+                                    <th class="px-3 py-2 text-left">Status</th>
+                                    <th class="px-3 py-2 text-left">Created at</th>
+                                    <th class="px-3 py-2 text-center">Actions</th>
+                                </tr>
+                            </thead>
                             <tbody>
                                 <?php foreach ($users as $row): ?>
                                     <tr class="hover:bg-gray-50 transition">
@@ -37,9 +48,11 @@ $users = getAllUsers($pdo, 'Official', 50);
                                         </td>
                                         <td class="px-3 py-2 whitespace-nowrap"><?= htmlspecialchars($row['email']) ?></td>
                                         <td class="px-3 py-2"><?= htmlspecialchars($row['role']) ?></td>
+                                        <td class="px-3 py-2"><?= htmlspecialchars($row['position'] ?? 'N/A') ?></td>
                                         <td class="px-3 py-2 text-yellow-600"><?= htmlspecialchars($row['status']) ?></td>
                                         <td class="px-3 py-2">
-                                            <?= htmlspecialchars(date("F j, Y", strtotime($row['created_at']))) ?></td>
+                                            <?= htmlspecialchars(date("F j, Y", strtotime($row['created_at']))) ?>
+                                        </td>
                                         <td class="px-3 py-2 text-center space-x-2">
                                             <button onclick="viewUser(<?= $row['user_id'] ?>)"
                                                 class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-xs">
@@ -60,6 +73,8 @@ $users = getAllUsers($pdo, 'Official', 50);
                                 <p><span class="font-semibold">Document:</span>
                                     <?= htmlspecialchars($row['email']) ?></p>
                                 <p><span class="font-semibold">Purpose:</span> <?= htmlspecialchars($row['role']) ?></p>
+                                <p><span class="font-semibold">Position:</span>
+                                    <?= htmlspecialchars($row['position'] ?? 'N/A') ?></p>
                                 <p><span class="font-semibold">Status:</span> <span
                                         class="text-yellow-600"><?= htmlspecialchars($row['status']) ?></span></p>
                                 <p><span class="font-semibold">Requested:</span>
@@ -80,45 +95,44 @@ $users = getAllUsers($pdo, 'Official', 50);
             </section>
         </div>
     </main>
-<div id="modalContainer"></div>
-        <script src="../../assets/js/Approval_Search.js"></script>
+    <div id="modalContainer"></div>
+    <script src="../../assets/js/Approval_Search.js"></script>
     <script>
-const modal = document.getElementById('profileModal');
-const openBtn = document.getElementById('openModalBtn'); // Optional if trigger exists
-const closeBtn = document.getElementById('closeModalBtn');
+        const modal = document.getElementById('profileModal');
+        const openBtn = document.getElementById('openModalBtn'); // Optional if trigger exists
+        const closeBtn = document.getElementById('closeModalBtn');
 
-const modalBody = document.getElementById('modalBody');
+        const modalBody = document.getElementById('modalBody');
 
-function viewUser(userId) {
-    fetch(`../../assets/modals/user_view_modal.php?user_id=${userId}`)
-        .then(res => res.text())
-        .then(html => {
-            document.getElementById('modalContainer').innerHTML = html;
+        function viewUser(userId) {
+            fetch(`../../assets/modals/user_view_modal.php?user_id=${userId}`)
+                .then(res => res.text())
+                .then(html => {
+                    document.getElementById('modalContainer').innerHTML = html;
 
-            const modal = document.getElementById('profileModal');
-            const closeBtn = document.getElementById('closeModalBtn');
+                    const modal = document.getElementById('profileModal');
+                    const closeBtn = document.getElementById('closeModalBtn');
 
-            // Show the modal
-            modal.classList.remove('opacity-0', 'pointer-events-none');
-            modal.classList.add('opacity-100');
+                    // Show the modal
+                    modal.classList.remove('opacity-0', 'pointer-events-none');
+                    modal.classList.add('opacity-100');
 
-            // Close button functionality
-            closeBtn.addEventListener('click', () => {
-                modal.classList.add('opacity-0', 'pointer-events-none');
-                modal.classList.remove('opacity-100');
-            });
+                    // Close button functionality
+                    closeBtn.addEventListener('click', () => {
+                        modal.classList.add('opacity-0', 'pointer-events-none');
+                        modal.classList.remove('opacity-100');
+                    });
 
-            // Close when clicking outside the modal content
-            modal.addEventListener('click', (e) => {
-                if (e.target === modal) {
-                    modal.classList.add('opacity-0', 'pointer-events-none');
-                    modal.classList.remove('opacity-100');
-                }
-            });
-        });
-}
-
-</script>
+                    // Close when clicking outside the modal content
+                    modal.addEventListener('click', (e) => {
+                        if (e.target === modal) {
+                            modal.classList.add('opacity-0', 'pointer-events-none');
+                            modal.classList.remove('opacity-100');
+                        }
+                    });
+                });
+        }
+    </script>
 
 </body>
 

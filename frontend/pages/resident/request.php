@@ -193,7 +193,7 @@
         </div>
     </main>
 
-   <!-- Request Modal -->
+<!-- Request Modal -->
 <div id="requestModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
     <div class="bg-white rounded-lg shadow-lg w-full max-w-md p-6">
         <h2 id="modalTitle" class="text-xl font-bold mb-4">Request Document</h2>
@@ -206,6 +206,20 @@
                 <label for="purpose" class="block text-sm font-medium">Purpose</label>
                 <textarea name="purpose" id="purpose" rows="3" 
                     class="w-full border rounded p-2" required></textarea>
+            </div>
+
+            <!-- Business Name (hidden by default) -->
+            <div id="businessNameField" class="hidden">
+                <label for="business_name" class="block text-sm font-medium">Business Name</label>
+                <input type="text" name="business_name" id="business_name" 
+                    class="w-full border rounded p-2" placeholder="Enter your business name">
+            </div>
+
+            <!-- Certificate of Indigency "What For" field (hidden by default) -->
+            <div id="indigencyPurposeField" class="hidden">
+                <label for="indigency_for" class="block text-sm font-medium">This Certificate is for:</label>
+                <input type="text" name="indigency_for" id="indigency_for"
+                    class="w-full border rounded p-2" placeholder="Ex. Scholarship, Medical Assistance, etc.">
             </div>
 
             <!-- Actions -->
@@ -222,9 +236,28 @@
 
     <script>
         function openRequestModal(documentName) {
-            document.getElementById('documentName').value = documentName;
-            document.getElementById('modalTitle').innerText = "Request: " + documentName;
-            document.getElementById('requestModal').classList.remove('hidden');
+    document.getElementById('documentName').value = documentName;
+    document.getElementById('modalTitle').innerText = "Request: " + documentName;
+    document.getElementById('requestModal').classList.remove('hidden');
+
+    // Reset optional fields
+    document.getElementById('businessNameField').classList.add('hidden');
+    document.getElementById('business_name').removeAttribute("required");
+    document.getElementById('indigencyPurposeField').classList.add('hidden');
+    document.getElementById('indigency_for').removeAttribute("required");
+
+    // Show Business Name if Business Permit is selected
+    if (documentName === "Business Permit") {
+        document.getElementById('businessNameField').classList.remove('hidden');
+        document.getElementById('business_name').setAttribute("required", "true");
+    }
+
+    // Show "What For" if Certificate of Indigency is selected
+    if (documentName === "Certificate of Indigency") {
+        document.getElementById('indigencyPurposeField').classList.remove('hidden');
+        document.getElementById('indigency_for').setAttribute("required", "true");
+    }
+
         }
 
         function closeRequestModal() {
@@ -249,4 +282,5 @@
                 });
         });
     </script>
+    
 </body>

@@ -1,37 +1,34 @@
-    <?php
-        include '../../components/Head.php';
-        include '../../components/Navbar.php';
-        include '../../../backend/config/db.php';
-        //THE DIFFERENCE BETWEEN PUBLIC AND RESIDENTS IS THAT IT IS ABLE ALSO TO NON_RESIDENT EVEN JUST PASSING BY THE SYSTEM
-        // ✅ Fetch events: upcoming, ongoing, or ended within the last 3 days
-       $stmt = $pdo->prepare("
+<?php
+include '../../components/Head.php';
+include '../../components/Navbar.php';
+include '../../../backend/config/db.php';
+//THE DIFFERENCE BETWEEN PUBLIC AND RESIDENTS IS THAT IT IS ABLE ALSO TO NON_RESIDENT EVEN JUST PASSING BY THE SYSTEM
+// ✅ Fetch events: upcoming, ongoing, or ended within the last 3 days
+$stmt = $pdo->prepare("
     SELECT *, 
         DATE_ADD(event_end, INTERVAL 3 DAY) AS keep_until
     FROM events
     WHERE is_archived != 1
-      AND status != 'Cancelled'
-      AND audience IN ('Public')
-      AND (
-          event_start IS NULL 
-          OR event_end >= DATE_SUB(NOW(), INTERVAL 3 DAY)
-      )
+        AND status != 'Cancelled'
+        AND audience IN ('Public')
+        AND (
+            event_start IS NULL 
+            OR event_end >= DATE_SUB(NOW(), INTERVAL 3 DAY)
+        )
     ORDER BY event_start ASC
 ");
 $stmt->execute();
 $Events = $stmt->fetchAll(PDO::FETCH_ASSOC);
+?>
 
-
-    ?>
 <body class="bg-gray-50">
-        <!-- EVENTS  -->
-        <?php include('./landing-page-section/events_section.php'); ?>
+    <!-- EVENTS  -->
+    <?php include('./landing-page-section/events_section.php'); ?>
     <script>
         const events = <?= json_encode($Events) ?>;
-
         function updateCountdown(startTime, endTime, elementId) {
             const el = document.getElementById(elementId);
             if (!el) return;
-
             const interval = setInterval(() => {
                 const now = new Date().getTime();
                 const start = new Date(startTime).getTime();
@@ -64,7 +61,6 @@ $Events = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 return `${d}d ${h}h ${m}m ${s}s`;
             }
         }
-
         // Initialize countdowns
         events.forEach(e => {
             updateCountdown(e.event_start, e.event_end, `countdown-${e.event_id}`);

@@ -42,7 +42,7 @@ $documentRequests = $stmt->fetchAll(PDO::FETCH_ASSOC);
 <?php include('resident-head.php'); ?>
 <body class="bg-gray-100">
     <?php include('../../components/DashNav.php'); ?>
-    <main class="pt-24 px-4 sm:px-6 lg:px-10 space-y-8">
+    <main class="pt-24 px-4 sm:px-6 lg:px-10 space-y-8 w-full min-h-screen">
         <div class="container">
             <!-- Document Requests Table -->
             <div class="bg-white shadow-md rounded-xl p-6 mt-8">

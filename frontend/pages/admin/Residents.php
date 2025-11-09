@@ -9,7 +9,7 @@ require '../../../backend/config/db.php';
 $pageTitle = "Admin | All Residents List";
 $pageDescription = "Manage Residents for Barangay Poblacion Sur System";
 include './admin-head.php';
-$users = getAllUsers($pdo, 'Resident',50);
+$users = getAllActiveUsers($pdo, 'Resident', 50);
 ?>
 
 <body class="bg-gray-100">
@@ -24,6 +24,7 @@ $users = getAllUsers($pdo, 'Resident',50);
 
                     <!-- Search -->
                     <?php include('../../components/document_search.php'); ?>
+                    
 
                     <!-- Desktop Table -->
                     <div class="hidden md:block overflow-x-auto max-h-96 overflow-y-auto">
@@ -39,12 +40,14 @@ $users = getAllUsers($pdo, 'Resident',50);
                                         <td class="px-3 py-2"><?= htmlspecialchars($row['role']) ?></td>
                                         <td class="px-3 py-2 text-yellow-600"><?= htmlspecialchars($row['status']) ?></td>
                                         <td class="px-3 py-2">
-                                            <?= htmlspecialchars(date("F j, Y", strtotime($row['created_at']))) ?></td>
+                                            <?= htmlspecialchars(date("F j, Y", strtotime($row['created_at']))) ?>
+                                        </td>
                                         <td class="px-3 py-2 text-center space-x-2">
                                             <button onclick="viewUser(<?= $row['user_id'] ?>)"
                                                 class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-xs">
                                                 View
                                             </button>
+
                                         </td>
                                     </tr>
                                 <?php endforeach; ?>
@@ -78,51 +81,51 @@ $users = getAllUsers($pdo, 'Resident',50);
                     </div>
                 </div>
             </section>
-            
+
         </div>
 
 
     </main>
-<div id="modalContainer"></div>
+    <div id="modalContainer"></div>
 
     <script src="../../assets/js/Approval_Search.js"></script>
     <script>
-const modal = document.getElementById('profileModal');
-const openBtn = document.getElementById('openModalBtn'); // Optional if trigger exists
-const closeBtn = document.getElementById('closeModalBtn');
+        const modal = document.getElementById('profileModal');
+        const openBtn = document.getElementById('openModalBtn'); // Optional if trigger exists
+        const closeBtn = document.getElementById('closeModalBtn');
 
-const modalBody = document.getElementById('modalBody');
+        const modalBody = document.getElementById('modalBody');
 
-function viewUser(userId) {
-    fetch(`../../assets/modals/user_view_modal.php?user_id=${userId}`)
-        .then(res => res.text())
-        .then(html => {
-            document.getElementById('modalContainer').innerHTML = html;
+        function viewUser(userId) {
+            fetch(`../../assets/modals/user_view_modal.php?user_id=${userId}`)
+                .then(res => res.text())
+                .then(html => {
+                    document.getElementById('modalContainer').innerHTML = html;
 
-            const modal = document.getElementById('profileModal');
-            const closeBtn = document.getElementById('closeModalBtn');
+                    const modal = document.getElementById('profileModal');
+                    const closeBtn = document.getElementById('closeModalBtn');
 
-            // Show the modal
-            modal.classList.remove('opacity-0', 'pointer-events-none');
-            modal.classList.add('opacity-100');
+                    // Show the modal
+                    modal.classList.remove('opacity-0', 'pointer-events-none');
+                    modal.classList.add('opacity-100');
 
-            // Close button functionality
-            closeBtn.addEventListener('click', () => {
-                modal.classList.add('opacity-0', 'pointer-events-none');
-                modal.classList.remove('opacity-100');
-            });
+                    // Close button functionality
+                    closeBtn.addEventListener('click', () => {
+                        modal.classList.add('opacity-0', 'pointer-events-none');
+                        modal.classList.remove('opacity-100');
+                    });
 
-            // Close when clicking outside the modal content
-            modal.addEventListener('click', (e) => {
-                if (e.target === modal) {
-                    modal.classList.add('opacity-0', 'pointer-events-none');
-                    modal.classList.remove('opacity-100');
-                }
-            });
-        });
-}
+                    // Close when clicking outside the modal content
+                    modal.addEventListener('click', (e) => {
+                        if (e.target === modal) {
+                            modal.classList.add('opacity-0', 'pointer-events-none');
+                            modal.classList.remove('opacity-100');
+                        }
+                    });
+                });
+        }
 
-</script>
+    </script>
 
 </body>
 

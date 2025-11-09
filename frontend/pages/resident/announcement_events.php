@@ -2,37 +2,13 @@
 include('resident-head.php');
 include('../../components/DashNav.php');
 include('../../../backend/config/db.php');
-
-/* ✅ Fetch Announcements (Public + Resident) */
-$stmtA = $pdo->prepare("
-    SELECT * FROM announcements 
-    WHERE is_deleted = 0 
-      AND audience IN ('Public','Resident')
-      AND (valid_until IS NULL OR valid_until >= NOW())
-    ORDER BY FIELD(priority, 'Urgent','High','Normal','Low'), created_at DESC
-");
-$stmtA->execute();
-$Announcements = $stmtA->fetchAll(PDO::FETCH_ASSOC);
-
-/* ✅ Fetch Events (Public + Resident) */
-$stmtE = $pdo->prepare("
-    SELECT *, DATE_ADD(event_end, INTERVAL 3 DAY) AS keep_until
-    FROM events
-    WHERE is_deleted = 0
-      AND (
-          event_start IS NULL 
-          OR event_end >= DATE_SUB(NOW(), INTERVAL 3 DAY)
-      )
-      AND audience IN ('Public','Resident')
-    ORDER BY event_start ASC
-");
-$stmtE->execute();
-$Events = $stmtE->fetchAll(PDO::FETCH_ASSOC);
+include('../../../backend/models/Repository.php');
+$Announcements = getResidentAnnouncements($pdo, $limit = 5);
+$Events = getResidentEvents($pdo, $limit = 5);
 ?>
-
-<body class="bg-gray-100">
-    <main class="pt-24 px-4 sm:px-6 lg:px-10 space-y-12">
-        <div class="container mx-auto">
+<body class="bg-gray-100 ">
+    <main class="pt-24 px-4 sm:px-6 lg:px-10 space-y-12 w-full min-h-screen place-items-center">
+        <div class="container mx-auto ">
             <h1 class="text-3xl font-bold text-center text-indigo-700 mb-10">📢 Announcement & 🎉 Events</h1>
 
             <!-- ✅ Announcements Section -->
@@ -47,31 +23,32 @@ $Events = $stmtE->fetchAll(PDO::FETCH_ASSOC);
                                 : '../../assets/images/home.jpg';
                             $priorityColors = [
                                 'Urgent' => 'bg-red-600 text-white',
-                                'High'   => 'bg-orange-500 text-white',
+                                'High' => 'bg-orange-500 text-white',
                                 'Normal' => 'bg-blue-500 text-white',
-                                'Low'    => 'bg-gray-400 text-white'
+                                'Low' => 'bg-gray-400 text-white'
                             ];
                             $priorityIcons = [
                                 'Urgent' => 'fa-triangle-exclamation',
-                                'High'   => 'fa-arrow-up',
+                                'High' => 'fa-arrow-up',
                                 'Normal' => 'fa-minus',
-                                'Low'    => 'fa-arrow-down',
+                                'Low' => 'fa-arrow-down',
                             ];
                             ?>
                             <div class="bg-white shadow-md rounded-lg p-4 flex flex-col cursor-pointer hover:shadow-lg transition"
-                                 onclick="openAnnouncementModal(<?= $a['announcement_id'] ?>)">
-                                <img src="<?= $image ?>" 
-                                     alt="<?= htmlspecialchars($a['announcement_title']) ?>" 
-                                     class="w-full h-40 object-cover rounded-lg mb-3"
-                                     onerror="this.onerror=null;this.src='../../uploads/images/default.jpg';">
+                                onclick="openAnnouncementModal(<?= $a['announcement_id'] ?>)">
+                                <img src="<?= $image ?>" alt="<?= htmlspecialchars($a['announcement_title']) ?>"
+                                    class="w-full h-40 object-cover rounded-lg mb-3"
+                                    onerror="this.onerror=null;this.src='../../uploads/images/default.jpg';">
 
-                                <span class="inline-flex items-center gap-1 px-3 py-1 text-xs font-bold rounded-full <?= $priorityColors[$a['priority']] ?? 'bg-gray-400 text-white' ?> mb-2">
+                                <span
+                                    class="inline-flex items-center gap-1 px-3 py-1 text-xs font-bold rounded-full <?= $priorityColors[$a['priority']] ?? 'bg-gray-400 text-white' ?> mb-2">
                                     <i class="fa-solid <?= $priorityIcons[$a['priority']] ?? 'fa-circle' ?>"></i>
                                     <?= htmlspecialchars($a['priority']) ?>
                                 </span>
 
                                 <h2 class="text-lg font-semibold mb-2"><?= htmlspecialchars($a['announcement_title']) ?></h2>
-                                <p class="text-gray-600 text-sm flex-grow"><?= nl2br(htmlspecialchars(substr($a['announcement_content'], 0, 120))) ?>...</p>
+                                <p class="text-gray-600 text-sm flex-grow">
+                                    <?= nl2br(htmlspecialchars(substr($a['announcement_content'], 0, 120))) ?>...</p>
                             </div>
                         <?php endforeach; ?>
                     <?php else: ?>
@@ -99,20 +76,23 @@ $Events = $stmtE->fetchAll(PDO::FETCH_ASSOC);
                             $is_recent = $now > $event_end && $now <= $recent_threshold;
                             ?>
                             <div class="bg-white shadow-md rounded-lg p-4 flex flex-col cursor-pointer hover:shadow-lg transition"
-                                 onclick="openEventModal(<?= $e['event_id'] ?>)">
-                                <img src="<?= $image ?>" 
-                                     alt="<?= htmlspecialchars($e['event_title']) ?>" 
-                                     class="w-full h-40 object-cover rounded-lg mb-3"
-                                     onerror="this.onerror=null;this.src='../../assets/images/home.jpg';">
+                                onclick="openEventModal(<?= $e['event_id'] ?>)">
+                                <img src="<?= $image ?>" alt="<?= htmlspecialchars($e['event_title']) ?>"
+                                    class="w-full h-40 object-cover rounded-lg mb-3"
+                                    onerror="this.onerror=null;this.src='../../assets/images/home.jpg';">
 
                                 <h2 class="text-lg font-semibold mb-2">
                                     <?= htmlspecialchars($e['event_title']) ?>
                                     <?php if ($is_recent): ?><span class="text-sm text-gray-500">(Recent)</span><?php endif; ?>
                                 </h2>
-                                <p class="text-sm text-gray-600 mb-1">📅 <?= date("M d, Y h:i A", strtotime($e['event_start'])) ?> - <?= date("h:i A", strtotime($e['event_end'])) ?></p>
-                                <p id="countdown-<?= $e['event_id'] ?>" class="text-sm font-semibold <?= $is_recent ? 'text-gray-400' : 'text-red-600' ?> mb-2"></p>
+                                <p class="text-sm text-gray-600 mb-1">📅
+                                    <?= date("M d, Y h:i A", strtotime($e['event_start'])) ?> -
+                                    <?= date("h:i A", strtotime($e['event_end'])) ?></p>
+                                <p id="countdown-<?= $e['event_id'] ?>"
+                                    class="text-sm font-semibold <?= $is_recent ? 'text-gray-400' : 'text-red-600' ?> mb-2"></p>
                                 <p class="text-sm text-gray-600 mb-2">📍 <?= htmlspecialchars($e['event_location']) ?></p>
-                                <p class="text-gray-500 text-sm flex-grow"><?= nl2br(htmlspecialchars(mb_substr($e['event_description'], 0, 100))) ?>...</p>
+                                <p class="text-gray-500 text-sm flex-grow">
+                                    <?= nl2br(htmlspecialchars(mb_substr($e['event_description'], 0, 100))) ?>...</p>
                             </div>
                         <?php endforeach; ?>
                     <?php else: ?>
@@ -127,8 +107,10 @@ $Events = $stmtE->fetchAll(PDO::FETCH_ASSOC);
     </main>
 
     <!-- ✅ Announcement Modal -->
-    <div id="announcementModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50 p-4">
-        <div class="bg-white rounded-lg shadow-lg w-full sm:w-11/12 md:w-2/3 lg:w-1/2 max-h-[90vh] overflow-y-auto p-6 relative">
+    <div id="announcementModal"
+        class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50 p-4">
+        <div
+            class="bg-white rounded-lg shadow-lg w-full sm:w-11/12 md:w-2/3 lg:w-1/2 max-h-[90vh] overflow-y-auto p-6 relative">
             <button onclick="closeAnnouncementModal()" class="absolute top-3 right-3 text-gray-600 hover:text-black">
                 <i class="fa-solid fa-xmark text-2xl"></i>
             </button>
@@ -138,7 +120,8 @@ $Events = $stmtE->fetchAll(PDO::FETCH_ASSOC);
 
     <!-- ✅ Event Modal -->
     <div id="eventModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50 p-4">
-        <div class="bg-white rounded-lg shadow-lg w-full sm:w-11/12 md:w-2/3 lg:w-1/2 max-h-[90vh] overflow-y-auto p-6 relative">
+        <div
+            class="bg-white rounded-lg shadow-lg w-full sm:w-11/12 md:w-2/3 lg:w-1/2 max-h-[90vh] overflow-y-auto p-6 relative">
             <button onclick="closeEventModal()" class="absolute top-3 right-3 text-gray-600 hover:text-black">
                 <i class="fa-solid fa-xmark text-2xl"></i>
             </button>
@@ -238,4 +221,5 @@ $Events = $stmtE->fetchAll(PDO::FETCH_ASSOC);
         }
     </script>
 </body>
+
 </html>

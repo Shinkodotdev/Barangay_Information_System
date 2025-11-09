@@ -17,7 +17,7 @@ $Announcements = getAllAnnouncements($pdo, null, 50);
         <div class="max-w-7xl mx-auto space-y-10">
             <section>
                 <h1 class="text-lg sm:text-xl md:text-2xl font-bold text-gray-800 mb-3">👥 All Announcements</h1>
-                <div class="bg-white shadow-md sm:shadow-xl rounded-xl p-6">
+                <div class="bg-white shadow-md sm:shadow-xl rounded-xl p-6 w-full">
                     <!-- Search -->
                     <?php include('../../components/document_search.php'); ?>
                     <!-- Desktop Table -->

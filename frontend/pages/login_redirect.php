@@ -4,14 +4,11 @@ if (!isset($_SESSION['success']) || !isset($_SESSION['redirect_after_success']))
     header("Location: login.php");
     exit;
 }
-
 $successMessage = $_SESSION['success'];
 $redirectUrl = $_SESSION['redirect_after_success'];
-
 // Clear session messages so it doesn’t repeat
 unset($_SESSION['success'], $_SESSION['redirect_after_success']);
 ?>
-
 <?php include '../components/Head.php'; ?>
 <body>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>

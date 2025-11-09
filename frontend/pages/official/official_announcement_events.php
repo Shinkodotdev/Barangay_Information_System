@@ -2,39 +2,12 @@
 include('official-head.php');
 include('../../components/DashNav.php');
 include('../../../backend/config/db.php');
-
-/* ✅ Fetch Announcements with Author Info (via users + user_details) */
-$stmtA = $pdo->prepare("
-    SELECT a.*,
-           ud.f_name, ud.m_name, ud.l_name, ud.ext_name,
-           u.role
-    FROM announcements a
-    LEFT JOIN users u ON a.author_id = u.user_id
-    LEFT JOIN user_details ud ON u.user_id = ud.user_id
-    WHERE a.is_archived = 0 
-      AND a.audience IN ('Public','Officials')
-      AND (a.valid_until IS NULL OR a.valid_until >= NOW())
-    ORDER BY FIELD(a.priority, 'Urgent','High','Normal','Low'), a.created_at DESC
-");
-$stmtA->execute();
-$Announcements = $stmtA->fetchAll(PDO::FETCH_ASSOC);
-
-/* ✅ Fetch Events (Public + Resident + Official) */
-$stmtE = $pdo->prepare("
-    SELECT e.*, DATE_ADD(e.event_end, INTERVAL 3 DAY) AS keep_until
-    FROM events e
-    WHERE e.is_archived = 0
-      AND (e.event_start IS NULL OR e.event_end >= DATE_SUB(NOW(), INTERVAL 3 DAY))
-      AND e.audience IN ('Public','Officials')
-    ORDER BY e.event_start ASC
-");
-$stmtE->execute();
-$Events = $stmtE->fetchAll(PDO::FETCH_ASSOC);
+include('../../../backend/models/Repository.php'); 
+$Announcements = getActiveAnnouncements($pdo);
+$Events = getActiveEvents($pdo);
 ?>
-
-
 <body class="bg-gray-100">
-    <main class="pt-24 px-4 sm:px-6 lg:px-10 space-y-12">
+    <main class="pt-24 px-4 sm:px-6 lg:px-10 space-y-12 w-full min-h-screen">
         <div class="container mx-auto">
             <h1 class="text-3xl font-bold text-center text-indigo-700 mb-10">📢 Announcement & 🎉 Events</h1>
 

@@ -1,12 +1,11 @@
-<?php
-// Dynamically find the auth_check.php file
-$authPath = __DIR__ . '/../../backend/auth/auth_check.php'; // adjust as needed
-if (!file_exists($authPath)) {
-    $authPath = __DIR__ . '/../../../backend/auth/auth_check.php'; // fallback for deeper pages
-}
-
-require_once $authPath;
-?>
+    <?php
+        // Dynamically find the auth_check.php file
+        $authPath = __DIR__ . '/../../backend/auth/auth_check.php'; // adjust as needed
+        if (!file_exists($authPath)) {
+            $authPath = __DIR__ . '/../../../backend/auth/auth_check.php'; // fallback for deeper pages
+        }
+        require_once $authPath;
+    ?>
 <!-- HEADER -->
 <header class="fixed top-0 left-0 w-full z-50 shadow-md bg-slate-900 text-white">
     <div class="flex items-center justify-between px-6 py-4 lg:px-10">
@@ -22,14 +21,12 @@ require_once $authPath;
                 WELCOME, <?= htmlspecialchars($userName) ?>
             </li>
         </ul>
-
         <!-- Mobile menu button -->
         <button id="sidebarToggle" class="md:hidden text-white text-2xl focus:outline-none">
             <i class="fa fa-bars"></i>
         </button>
     </div>
 </header>
-
 <div class="flex min-h-screen pt-16"> <!-- pt-16 = navbar height -->
     <!-- Sidebar -->
     <aside id="sidebar" class="w-64 bg-slate-900 text-white flex flex-col transform -translate-x-full md:translate-x-0
@@ -47,8 +44,6 @@ require_once $authPath;
                     </p>
                 </div>
             </div>
-
-
             <!-- FOR ADMIN   -->
             <?php if ($userRole === 'Admin' && $userStatus === 'Approved'): ?>
                 <a href="dashboard.php" class="flex items-center px-4 py-2 rounded hover:bg-slate-700 transition">
@@ -57,28 +52,30 @@ require_once $authPath;
                 <a href="admin-profile.php" class="flex items-center px-4 py-2 rounded hover:bg-slate-700 transition">
                     <span class="mr-2">👤</span> Profile
                 </a>
+                <a href="manage_approval.php" class="flex items-center px-4 py-2 rounded hover:bg-slate-700 transition">
+                    <span class="mr-2">✅</span> Approvals
+                </a>
                 <div x-data="{ openAnnouncements: false }">
                     <button @click="openAnnouncements = !openAnnouncements"
                         class="w-full flex justify-between items-center px-4 py-2 hover:bg-slate-700 transition">
                         <div class="flex items-center">
-                            <span class="mr-2">📢📅</span> Announcements & Events
+                            <span class="mr-2">📢</span> Updates
                         </div>
                         <span x-show="!openAnnouncements">➕</span>
                         <span x-show="openAnnouncements">➖</span>
                     </button>
                     <div x-show="openAnnouncements" class="ml-6 mt-1 space-y-1">
                         <a href="manage_announcements.php" class="block px-2 py-1 text-sm hover:text-blue-400">
-                            📢 📅 Announcements & Events
+                            Announcements & Events
                         </a>
                         <a href="Announcements.php" class="block px-2 py-1 text-sm hover:text-blue-400">
-                            📢 Manage Announcements
+                            Manage Announcements
                         </a>
                         <a href="Events.php" class="block px-2 py-1 text-sm hover:text-blue-400">
-                            📅 Manage Events
+                            Manage Events
                         </a>
                     </div>
                 </div>
-
                 <div x-data="{ openOfficials: false }">
                     <button @click="openOfficials = !openOfficials"
                         class="w-full flex justify-between items-center px-4 py-2 hover:bg-slate-700 transition">
@@ -111,12 +108,23 @@ require_once $authPath;
                         <a href="Residents.php" class="block px-2 py-1 text-sm hover:text-blue-400">Resident List</a>
                     </div>
                 </div>
-                <a href="manage_approval.php" class="flex items-center px-4 py-2 rounded hover:bg-slate-700 transition">
-                    <span class="mr-2">✅</span> Approvals
-                </a>
-                <a href="health_reports.php" class="flex items-center px-4 py-2 rounded hover:bg-slate-700 transition">
-                    <span class="mr-2">📊</span> Health Reports
-                </a>
+                <div x-data="{ openReports: false }">
+                    <button @click="openReports = !openReports"
+                        class="w-full flex justify-between items-center px-4 py-2 hover:bg-slate-700 transition">
+                        <div class="flex items-center">
+                            <i class="fa-solid fa-chart-line mr-3 text-lg"></i>
+                            <span class="font-medium">Reports</span>
+                        </div>
+                        <span x-show="!openReports">➕</span>
+                        <span x-show="openReports">➖</span>
+                    </button>
+
+                    <div x-show="openReports" x-transition class="ml-6 mt-1 space-y-1">
+                        <a href="health_reports.php" class="block px-2 py-1 text-sm hover:text-blue-400">Health Reports</a>
+                        <a href="incident_reports.php" class="block px-2 py-1 text-sm hover:text-blue-400">Incident Reports</a>
+                        <a href="inquries_reports.php" class="block px-2 py-1 text-sm hover:text-blue-400">Inquries Reports</a>
+                    </div>
+                </div>
 
                 <!-- FOR APPROVED OFFICIAL  -->
             <?php elseif ($userRole === 'Official' && $userStatus === 'Approved'): ?>
@@ -138,11 +146,11 @@ require_once $authPath;
                     <span class="mr-2">🏠</span> Dashboard
                 </a>
                 <a href="official_profile.php" class="flex items-center px-4 py-2 rounded hover:bg-slate-700 transition">
-                    <span class="mr-2">👤</span> Profile
+                    <span class="mr-2">👤</span> My Profile
                 </a>
                 <a href="official_announcement_events.php"
                     class="flex items-center px-4 py-2 rounded hover:bg-slate-700 transition">
-                    <span class="mr-2">📢📅</span> Announcements & Events
+                    <span class="mr-2">📢</span> Updates
                 </a>
 
                 <div x-data="{ openDocs: false }">
@@ -165,14 +173,15 @@ require_once $authPath;
                     <button @click="openHealth = !openHealth"
                         class="w-full flex justify-between items-center px-4 py-2 hover:bg-slate-700 transition">
                         <div class="flex items-center">
-                            <span class="mr-2">📊</span> Health Survey
+                            <i class="fa-solid fa-chart-line mr-3 text-lg"></i>
+                            <span class="mr-2"></span> Reports
                         </div>
                         <span x-show="!openHealth">➕</span>
                         <span x-show="openHealth">➖</span>
                     </button>
                     <div x-show="openHealth" class="ml-6 mt-1 space-y-1">
-                        <a href="official_health_reports.php" class="block px-2 py-1 text-sm hover:text-blue-400">View
-                            Reports</a>
+                        <a href="official_health_reports.php" class="block px-2 py-1 text-sm hover:text-blue-400">View Health Reports</a>
+                        <a href="official_incident_reports.php" class="block px-2 py-1 text-sm hover:text-blue-400">View Incident Reports</a>    
                     </div>
                 </div>
 
@@ -196,12 +205,12 @@ require_once $authPath;
                     <span class="mr-2">🏠</span> Dashboard
                 </a>
                 <a href="profile.php" class="flex items-center px-4 py-2 rounded hover:bg-slate-700 transition">
-                    <span class="mr-2">👤</span> Profile
+                    <span class="mr-2">👤</span>My Profile
                 </a>
                 <div class="space-y-2">
                     <a href="announcement_events.php"
                         class="flex items-center px-4 py-2 rounded hover:bg-slate-700 transition">
-                        <span class="mr-2">📢</span> Announcements & Events
+                        <span class="mr-2">📢</span> Updates
                     </a>
                     <div x-data="{ openDocs: false }">
                         <button @click="openDocs = !openDocs"
@@ -215,20 +224,22 @@ require_once $authPath;
                         <div x-show="openDocs" class="ml-6 mt-1 space-y-1">
                             <a href="request.php" class="block px-2 py-1 text-sm hover:text-blue-400">Request Documents</a>
                             <a href="my_requests.php" class="block px-2 py-1 text-sm hover:text-blue-400">My Requests</a>
+                            <a href="my_reports.php" class="block px-2 py-1 text-sm hover:text-blue-400">My Reports</a>
                         </div>
                     </div>
                     <div x-data="{ openHealth: false }">
                         <button @click="openHealth = !openHealth"
                             class="w-full flex justify-between items-center px-4 py-2 hover:bg-slate-700 transition">
                             <div class="flex items-center">
-                                <span class="mr-2">📊</span> Health Survey
+                                <i class="fa-solid fa-chart-line mr-3 text-lg"></i>
+                                <span class="mr-2"></span> Reports
                             </div>
                             <span x-show="!openHealth">➕</span>
                             <span x-show="openHealth">➖</span>
                         </button>
                         <div x-show="openHealth" class="ml-6 mt-1 space-y-1">
-                            <a href="health_reports.php" class="block px-2 py-1 text-sm hover:text-blue-400">View
-                                Reports</a>
+                            <a href="health_reports.php" class="block px-2 py-1 text-sm hover:text-blue-400">Health Reports</a>
+                            <a href="incident_reports.php" class="block px-2 py-1 text-sm hover:text-blue-400">Incident Reports</a>
                         </div>
                     </div>
                 </div>

@@ -1,3 +1,4 @@
+<!-- BIRTH INFO  -->
 <section class="bg-white p-6 rounded-xl shadow-sm">
                 <?php sectionHeader("fa-baby", "Birth Information"); ?>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -12,7 +13,7 @@
                             Birth Place
                         </label>
                         <input
-                            class="w-full border rounded px-3 py-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                            class="w-full border rounded px-3 py-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 uppercase"
                             name="birth_place" value="<?= htmlspecialchars($data['birth_place'] ?? '') ?>"
                             placeholder="Birthplace">
                     </div>

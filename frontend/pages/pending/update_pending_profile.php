@@ -40,7 +40,9 @@ function handleFileUpload($fileKey, $oldPath, $subFolder)
 $stmt = $pdo->prepare("UPDATE user_details SET 
     f_name = ?, m_name = ?, l_name = ?, ext_name = ?, gender = ?, 
     contact_no = ?, civil_status = ?, occupation = ?, 
-    nationality = ?, religion = ?
+    nationality = ?, voter_status = ?, pwd_status = ?, 
+    senior_citizen_status = ?, religion = ?, 
+    blood_type = ?, educational_attainment = ?
     WHERE user_id = ?");
 $stmt->execute([
     getPost('f_name'),
@@ -52,7 +54,12 @@ $stmt->execute([
     getPost('civil_status'),
     getPost('occupation'),
     getPost('nationality'),
+    getPost('voter_status'),
+    getPost('pwd_status'),
+    getPost('senior_citizen_status'),
     getPost('religion'),
+    getPost('blood_type'),
+    getPost('educational_attainment'),
     $user_id
 ]);
 

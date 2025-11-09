@@ -1,5 +1,7 @@
 <?php
 require __DIR__ . '/../../vendor/autoload.php';
+require __DIR__ . '/../config/db.php';
+
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
@@ -7,24 +9,36 @@ class ContactController
 {
     public function sendMessage($data)
     {
+        global $pdo;
+
         $name = htmlspecialchars(trim($data['name']));
         $email = filter_var(trim($data['email']), FILTER_SANITIZE_EMAIL);
         $message = htmlspecialchars(trim($data['message']));
 
-        if(empty($name) || empty($email) || empty($message)){
+        if (empty($name) || empty($email) || empty($message)) {
             $this->alert('error', 'All Fields Required', 'Please fill out all fields before sending.');
             return;
         }
 
-        if(!filter_var($email, FILTER_VALIDATE_EMAIL)){
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
             $this->alert('error', 'Invalid Email', 'Please enter a valid email address.');
             return;
         }
 
         try {
-            
-            $mail = new PHPMailer(true);
+            // ✅ Save inquiry to database
+            $stmt = $pdo->prepare("
+                INSERT INTO inquiries (inquiries_name, inquiries_email, inquiries_message)
+                VALUES (:name, :email, :message)
+            ");
+            $stmt->execute([
+                ':name' => $name,
+                ':email' => $email,
+                ':message' => $message
+            ]);
 
+            // ✅ Send email
+            $mail = new PHPMailer(true);
             $mail->isSMTP();
             $mail->Host       = 'smtp.gmail.com';
             $mail->SMTPAuth   = true;
@@ -34,18 +48,16 @@ class ContactController
             $mail->Port       = 587;
 
             $mail->setFrom('poblacionsur648@gmail.com', 'Barangay Poblacion Sur');
-            $mail->addAddress('galvezcrizelvalenzuela13@gmail.com', 'Barangay Information System Admin'); // Admin receives
-             $mail->addAddress('poblacionsur648@gmail.com', 'Barangay Information System'); // System
-            $mail->addReplyTo($email, $name); // Admin can reply to sender
-            $mail->addCC($email, $name); // Sender gets a copy
+            $mail->addAddress('galvezcrizelvalenzuela13@gmail.com', 'Barangay Information System Admin');
+            $mail->addAddress('poblacionsur648@gmail.com', 'Barangay Information System');
+            $mail->addReplyTo($email, $name);
+            $mail->addCC($email, $name);
 
-            // Embed logo
             $mail->AddEmbeddedImage(__DIR__ . "/../../frontend/assets/images/Logo.jpg", "logo", "Logo.jpg");
 
             $mail->isHTML(true);
             $mail->Subject = "New Contact Message from $name";
-
-            $mailBody = "
+            $mail->Body = "
             <div style='font-family: Arial, sans-serif; background:#f5f7fa; padding:20px;'>
                 <div style='max-width:600px; margin:auto; background:#fff; border-radius:10px; box-shadow:0 4px 10px rgba(0,0,0,0.1); overflow:hidden;'>
                     <div style='background:#2563eb; color:#fff; text-align:center; padding:20px;'>
@@ -64,18 +76,16 @@ class ContactController
                         &copy; " . date("Y") . " Barangay Poblacion Sur. All rights reserved.
                     </div>
                 </div>
-            </div>
-            ";
+            </div>";
 
-            $mail->Body = $mailBody;
             $mail->AltBody = "New Message from $name ($email): $message";
-
             $mail->send();
 
             $this->alert('success', 'Message Sent!', 'Thank you for contacting us. A copy has been sent to your email.', '../../frontend/pages/landing-page/Contact.php');
-
         } catch (Exception $e) {
             $this->alert('error', 'Failed to Send', 'Message could not be sent. Please try again.');
+        } catch (PDOException $e) {
+            $this->alert('error', 'Database Error', 'Unable to save your message. Please try again later.');
         }
     }
 

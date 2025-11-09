@@ -80,7 +80,7 @@ $income_proof   = uploadFile($files['income_proof'] ?? [], $uploadPaths['income_
                 $stmt = $this->pdo->prepare("
                     UPDATE user_details 
                     SET f_name=?, m_name=?, l_name=?, ext_name=?, gender=?, photo=?, contact_no=?,
-                        civil_status=?, occupation=?, nationality=?, voter_status=?, religion=?, blood_type=?, educational_attainment=?
+                        civil_status=?, occupation=?, nationality=?, voter_status=?, pwd_status=?, senior_citizen_status=?,religion=?, blood_type=?, educational_attainment=?
                     WHERE user_id=?
                 ");
                 $stmt->execute([
@@ -95,6 +95,8 @@ $income_proof   = uploadFile($files['income_proof'] ?? [], $uploadPaths['income_
                     $postData['occupation'],
                     $postData['nationality'],
                     $postData['voter_status'],
+                    $postData['pwd_status'],
+                    $postData['senior_citizen_status'],
                     $postData['religion'],
                     $postData['blood_type'],
                     $postData['educational_attainment'],
@@ -104,8 +106,8 @@ $income_proof   = uploadFile($files['income_proof'] ?? [], $uploadPaths['income_
                 $stmt = $this->pdo->prepare("
                     INSERT INTO user_details 
                         (user_id, f_name, m_name, l_name, ext_name, gender, photo, contact_no,
-                        civil_status, occupation, nationality, voter_status, religion, blood_type, educational_attainment)
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                        civil_status, occupation, nationality, voter_status, pwd_status, senior_citizen_status,religion, blood_type, educational_attainment)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 ");
                 $stmt->execute([
                     $user_id,
@@ -120,6 +122,8 @@ $income_proof   = uploadFile($files['income_proof'] ?? [], $uploadPaths['income_
                     $postData['occupation'],
                     $postData['nationality'],
                     $postData['voter_status'],
+                    $postData['pwd_status'],
+                    $postData['senior_citizen_status'],
                     $postData['religion'],
                     $postData['blood_type'],
                     $postData['educational_attainment']

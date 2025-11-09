@@ -17,7 +17,7 @@ include 'admin-head.php';
             <section>
                 <h1 class="text-lg sm:text-xl md:text-2xl font-bold text-gray-800 mb-3">👥 Manage Officials
                 </h1>
-                <?php include('../../components/manage/user.php');?>
+                <?php include('../../components/manage/official.php');?>
             </section>
         </div>
     </main>
@@ -26,6 +26,6 @@ include 'admin-head.php';
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="../../assets/js/Approval_Search.js"></script>
     <script src="../../assets/js/Open_profile_modal.js"></script>
-    <script src="../../assets/js/User_Reminder.js"></script>
+
 </body>
 </html>

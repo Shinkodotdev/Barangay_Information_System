@@ -37,12 +37,15 @@
         foreach ($requiredPositions as $position):
             $official = $officialMap[$position] ?? null;
             $photo = $official && !empty($official['photo'])
-                ? '../../uploads/profile/' . htmlspecialchars($official['photo'])
-                : '../../assets/images/home.jpg';
+                ? '/Barangay_Information_System/' . ltrim(str_replace('../', '', $official['photo']), '/')
+                : '/Barangay_Information_System/frontend/assets/images/home.jpg';
+
+
             $full_name = $official['full_name'] ?? 'Vacant';
-        ?>
+            ?>
             <div class="bg-white p-6 rounded-xl shadow-md hover:shadow-lg transition">
-                <img src="<?= htmlspecialchars($photo) ?>" alt="<?= htmlspecialchars($position) ?>" class="w-24 h-24 mx-auto rounded-full mb-4">
+                <img src="<?= htmlspecialchars($photo) ?>" alt="<?= htmlspecialchars($position) ?>"
+                    class="w-24 h-24 mx-auto rounded-full mb-4">
                 <h3 class="text-lg font-semibold text-gray-800"><?= htmlspecialchars($full_name) ?></h3>
                 <p class="text-gray-600 text-sm"><?= htmlspecialchars($position) ?></p>
             </div>

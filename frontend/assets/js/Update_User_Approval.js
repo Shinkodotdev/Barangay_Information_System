@@ -27,7 +27,7 @@ function updateUser(userId, action) {
                     showConfirmButton: false
                 }).then(() => {
                     if (data.success) {
-                        location.reload(); // Refresh table
+                        location.reload();
                     }
                 });
             })

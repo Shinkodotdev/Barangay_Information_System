@@ -1,3 +1,4 @@
+<!-- Personal Info -->
 <div class="flex flex-col sm:flex-row sm:items-center sm:space-x-6 bg-white p-6 rounded-xl shadow-md mb-10">
                 <!-- Profile Photo -->
                 <div class="flex flex-col items-center sm:items-start">
@@ -46,7 +47,7 @@
                             First Name
                         </label>
                         <input
-                            class="w-full border rounded px-3 py-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                            class="w-full border rounded px-3 py-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 uppercase"
                             name="f_name" value="<?= htmlspecialchars($data['f_name'] ?? '') ?>"
                             placeholder="First Name">
                     </div>
@@ -54,7 +55,7 @@
                             Middle Name
                         </label>
                         <input
-                            class="w-full border rounded px-3 py-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                            class="w-full border rounded px-3 py-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 uppercase"
                             name="m_name" value="<?= htmlspecialchars($data['m_name'] ?? '') ?>"
                             placeholder="Middle Name">
                     </div>
@@ -62,7 +63,7 @@
                             Last Name
                         </label>
                         <input
-                            class="w-full border rounded px-3 py-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                            class="w-full border rounded px-3 py-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 uppercase"
                             name="l_name" value="<?= htmlspecialchars($data['l_name'] ?? '') ?>"
                             placeholder="Last Name">
                     </div>
@@ -71,7 +72,7 @@
                             Ext. Name
                         </label>
                         <select name="ext_name"
-                            class="w-full border rounded px-3 py-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                            class="w-full border rounded px-3 py-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 uppercase">
                             <option value="">Extension</option>
                             <?php
                             $extOptions = ["JR", "SR", "I", "II", "III", "IV"];
@@ -129,10 +130,10 @@
                         <select name="gender"
                             class="w-full border rounded px-3 py-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500">
                             <option value="">Gender</option>
-                            <option value="Male" <?= ($data['gender'] ?? '') === "Male" ? "selected" : "" ?>>Male</option>
-                            <option value="Female" <?= ($data['gender'] ?? '') === "Female" ? "selected" : "" ?>>Female
+                            <option value="MALE" <?= ($data['gender'] ?? '') === "MALE" ? "selected" : "" ?>>MALE</option>
+                            <option value="FEMALE" <?= ($data['gender'] ?? '') === "FEMALE" ? "selected" : "" ?>>FEMALE
                             </option>
-                            <option value="Other" <?= ($data['gender'] ?? '') === "Other" ? "selected" : "" ?>>Other
+                            <option value="OTHER" <?= ($data['gender'] ?? '') === "OTHER" ? "selected" : "" ?>>OTHER
                             </option>
                         </select>
                     </div>

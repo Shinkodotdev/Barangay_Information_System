@@ -1,26 +1,20 @@
 <?php
 session_start();
-$allowedRoles = ['Admin']; 
+$allowedRoles = ['Admin'];
 $allowedStatus = ['Approved'];
 require_once "../../../backend/auth/auth_check.php";
-
 require '../../../backend/config/db.php';
+require_once "../../../backend/models/Repository.php";
+$pageTitle = "Admin | Set Officials";
+$pageDescription = "Set Officials for Barangay Poblacion Sur System";
+include 'admin-head.php';
+// Enable PDO error reporting
 $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-
 // Default messages
 $success = $error = "";
-
-// Auto-update officials whose term has ended
-$today = date('Y-m-d');
-$updateStmt = $pdo->prepare("
-    UPDATE officials o
-    INNER JOIN users u ON o.user_id = u.user_id
-    SET u.role = CONCAT('Former ', o.position)
-    WHERE o.end_of_term < :today
-");
-$updateStmt->execute([':today' => $today]);
-
-// Handle assignment
+// ✅ Auto update expired officials
+updateExpiredOfficials($pdo);
+// ✅ Handle assignment
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['assign_official'])) {
     $userId = $_POST['user_id'] ?? null;
     $position = trim($_POST['position'] ?? '');
@@ -29,81 +23,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['assign_official'])) {
 
     if ($userId && $position && $startOfTerm && $endOfTerm) {
         try {
-            $pdo->beginTransaction();
-
-            // Check if already an official
-            $check = $pdo->prepare("SELECT COUNT(*) FROM officials WHERE user_id = :user_id");
-            $check->execute([':user_id' => $userId]);
-            if ($check->fetchColumn() > 0) {
-                throw new Exception("This user is already assigned as an Official.");
-            }
-
-            // Insert into officials
-            $stmt = $pdo->prepare("
-                INSERT INTO officials (user_id, position, start_of_term, end_of_term)
-                VALUES (:user_id, :position, :start_of_term, :end_of_term)
-            ");
-            $stmt->execute([
-                ':user_id' => $userId,
-                ':position' => $position,
-                ':start_of_term' => $startOfTerm,
-                ':end_of_term' => $endOfTerm
-            ]);
-
-            // Update role
-            $stmt = $pdo->prepare("UPDATE users SET role = 'Official' WHERE user_id = :user_id");
-            $stmt->execute([':user_id' => $userId]);
-
-            $pdo->commit();
-            $success = "✅ User assigned as Official successfully!";
+            $success = assignOfficial($pdo, $userId, $position, $startOfTerm, $endOfTerm);
         } catch (Exception $e) {
-            $pdo->rollBack();
             $error = "❌ Error: " . $e->getMessage();
         }
     } else {
         $error = "⚠️ Please fill all required fields.";
     }
 }
-
-$stmt = $pdo->query("
-    SELECT u.user_id, u.email, u.role, u.status,
-        CONCAT(
-            d.f_name, ' ',
-            COALESCE(CONCAT(d.m_name, ' '), ''),
-            d.l_name,
-            IF(d.ext_name IS NOT NULL AND d.ext_name != '', CONCAT(' ', d.ext_name), '')
-        ) AS full_name
-    FROM users u
-    LEFT JOIN user_details d ON u.user_id = d.user_id
-    LEFT JOIN officials o ON u.user_id = o.user_id
-    WHERE u.role != 'Admin'
-        AND u.status = 'Pending'
-        AND o.user_id IS NULL
-    ORDER BY u.created_at DESC
-    LIMIT 50
-");
-$users = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-// Fetch all assigned positions
-$assignedPositionsStmt = $pdo->query("SELECT position FROM officials");
-$assignedPositions = $assignedPositionsStmt->fetchAll(PDO::FETCH_COLUMN);
-
+// ✅ Fetch users and positions
+$users = getApprovedUsersForAssignment($pdo, 50);
+$assignedPositions = getAssignedPositions($pdo);
 // All possible positions
 $positions = ["Barangay Captain", "Barangay Councilor", "SK Chairman", "SK Councilor"];
 ?>
-
-<?php
-$pageTitle = "Admin | Manage Officials";
-$pageDescription = "Manage Officials for Barangay Poblacion Sur System";
-include 'admin-head.php';
-?>
-
 <body class="bg-gray-100">
 <?php include('../../components/DashNav.php'); ?>
 
 <main class="flex-1 p-4 sm:p-6 md:ml-14 mt-16 md:mt-0 bg-gray-100">
     <div class="max-w-7xl mx-auto">
-        <h1 class="text-2xl font-bold text-gray-800 mb-6">👥 Manage Officials</h1>
+        <h1 class="text-2xl font-bold text-gray-800 mb-6">👥 Set Officials</h1>
 
         <!-- Messages -->
         <?php if (!empty($success)): ?>
@@ -178,7 +117,6 @@ include 'admin-head.php';
         </div>
     </div>
 </main>
-
 <script src="../../assets/js/TimeOut.js"></script>
 </body>
 </html>

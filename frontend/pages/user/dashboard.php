@@ -146,7 +146,7 @@ $userDetails = $stmt->fetch(PDO::FETCH_ASSOC);
                 <div class="bg-white shadow-md rounded-xl p-6 hover:shadow-xl transition duration-300 w-full max-w-md">
                     <h2 class="text-md font-bold mb-3">BIRTH INFORMATION</h2>
                     <div class="grid grid-cols-1 sm:grid-cols-1 gap-4">
-                        <input type="date" name="birthdate" value="<?php echo $userDetails['birthdate'] ?? ''; ?>" class="border rounded p-2 w-full" required>
+                        <input type="date" name="birthdate" value="<?php echo $userDetails['birth_date'] ?? ''; ?>" class="border rounded p-2 w-full" required>
                         <input type="text" name="birth_place"
                             value="<?php echo strtoupper($userDetails['birth_place'] ?? ''); ?>"
                             placeholder="BIRTH PLACE *"

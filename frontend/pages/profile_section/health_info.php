@@ -1,3 +1,4 @@
+<!-- Health Info  -->
 <section>
                 <div class="bg-white shadow rounded-xl p-6">
                     <legend class="font-semibold text-lg mb-4 text-indigo-600 border-b pb-2">Health Information</legend>

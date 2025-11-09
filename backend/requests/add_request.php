@@ -13,6 +13,8 @@ if (!isset($_SESSION['user_id'])) {
 $user_id = $_SESSION['user_id'];
 $document_name = trim($_POST['document_name'] ?? '');
 $purpose = trim($_POST['purpose'] ?? '');
+$business_name = trim($_POST['business_name'] ?? null);
+$indigency_for = trim($_POST['indigency_for'] ?? null);
 
 // Validate input
 if (empty($document_name) || empty($purpose)) {
@@ -23,15 +25,17 @@ if (empty($document_name) || empty($purpose)) {
 try {
     $stmt = $pdo->prepare("
         INSERT INTO document_requests 
-            (user_id, document_name, purpose, status, requested_at, is_deleted) 
+            (user_id, document_name, purpose, business_name, indigency_for, status, requested_at, is_deleted) 
         VALUES 
-            (:user_id, :document_name, :purpose, 'Pending', NOW(), 0)
+            (:user_id, :document_name, :purpose, :business_name, :indigency_for, 'Pending', NOW(), 0)
     ");
 
     $stmt->execute([
-        ':user_id' => $user_id,
+        ':user_id'       => $user_id,
         ':document_name' => $document_name,
-        ':purpose' => $purpose
+        ':purpose'       => $purpose,
+        ':business_name' => !empty($business_name) ? $business_name : null,
+        ':indigency_for' => !empty($indigency_for) ? $indigency_for : null,
     ]);
 
     echo json_encode([
