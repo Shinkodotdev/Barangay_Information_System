@@ -1,0 +1,16 @@
+# netlify.toml for PHP project
+[build]
+  # Command to install PHP dependencies
+  command = "composer install"
+  # Folder to publish; root has index.php
+  publish = "."
+
+# Enable PHP plugin for Netlify
+[[plugins]]
+  package = "@netlify/plugin-php"
+
+# Optional: redirect all requests to index.php (for routing)
+[[redirects]]
+  from = "/*"
+  to = "/index.php"
+  status = 200
