@@ -1,6 +1,9 @@
 [build]
-  command = "composer install"
   publish = "."
+  command = "composer install"
+
+[[plugins]]
+  package = "@netlify/plugin-php"
 
 [[redirects]]
   from = "/*"
